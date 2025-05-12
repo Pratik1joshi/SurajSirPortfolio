@@ -1,8 +1,10 @@
-import { ExternalLink, FileText } from "lucide-react"
+import { ExternalLink, FileText, ArrowRight } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import SectionHeader from "@/components/SectionHeader"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
-export default function Publications() {
+export default function Publications({ limit, showLink = false }) {
   const journalArticles = [
     {
       id: 1,
@@ -39,79 +41,101 @@ export default function Publications() {
     },
   ]
 
+  // If limit is provided, only show limited journal articles
+  const displayedArticles = limit ? journalArticles.slice(0, limit) : journalArticles;
+  // Only show book chapters if not limited or if there's still room in the limit
+  const displayedChapters = limit ? 
+    (limit > journalArticles.length ? bookChapters.slice(0, limit - journalArticles.length) : []) : 
+    bookChapters;
+
   return (
     <section id="publications" className="py-20 bg-slate-50">
       <div className="container">
         <SectionHeader title="Publications" subtitle="My Research" />
         <div className="grid grid-cols-1 gap-8">
-          <Card>
-            <CardContent className="p-8">
-              <h3 className="text-xl font-bold mb-4">Journal Articles</h3>
-              <ul className="space-y-4">
-                {journalArticles.map((article) => (
-                  <li className="flex items-start gap-3" key={article.id}>
-                    <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <FileText className="h-3 w-3 text-primary" />
-                    </div>
-                    <div>
-                      <p
-                        className="text-muted-foreground"
-                        dangerouslySetInnerHTML={{
-                          __html: article.citation.replace(
-                            "Gautam, S.",
-                            '<span class="font-semibold">Gautam, S.</span>',
-                          ),
-                        }}
-                      />
-                      <a
-                        href={article.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary text-sm flex items-center gap-1 mt-1"
-                      >
-                        <ExternalLink className="h-3 w-3" /> View publication
-                      </a>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          {displayedArticles.length > 0 && (
+            <Card>
+              <CardContent className="p-8">
+                <h3 className="text-xl font-bold mb-4">Journal Articles</h3>
+                <ul className="space-y-4">
+                  {displayedArticles.map((article) => (
+                    <li className="flex items-start gap-3" key={article.id}>
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                        <FileText className="h-3 w-3 text-primary" />
+                      </div>
+                      <div>
+                        <p
+                          className="text-muted-foreground"
+                          dangerouslySetInnerHTML={{
+                            __html: article.citation.replace(
+                              "Gautam, S.",
+                              '<span class="font-semibold">Gautam, S.</span>',
+                            ),
+                          }}
+                        />
+                        <a
+                          href={article.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary text-sm flex items-center gap-1 mt-1"
+                        >
+                          <ExternalLink className="h-3 w-3" /> View publication
+                        </a>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
 
-          <Card>
-            <CardContent className="p-8">
-              <h3 className="text-xl font-bold mb-4">Book Chapters</h3>
-              <ul className="space-y-4">
-                {bookChapters.map((chapter) => (
-                  <li className="flex items-start gap-3" key={chapter.id}>
-                    <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
-                      <FileText className="h-3 w-3 text-primary" />
-                    </div>
-                    <div>
-                      <p
-                        className="text-muted-foreground"
-                        dangerouslySetInnerHTML={{
-                          __html: chapter.citation.replace(
-                            "Gautam, S.",
-                            '<span class="font-semibold">Gautam, S.</span>',
-                          ),
-                        }}
-                      />
-                      <a
-                        href={chapter.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary text-sm flex items-center gap-1 mt-1"
-                      >
-                        <ExternalLink className="h-3 w-3" /> View publication
-                      </a>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          {displayedChapters.length > 0 && (
+            <Card>
+              <CardContent className="p-8">
+                <h3 className="text-xl font-bold mb-4">Book Chapters</h3>
+                <ul className="space-y-4">
+                  {displayedChapters.map((chapter) => (
+                    <li className="flex items-start gap-3" key={chapter.id}>
+                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                        <FileText className="h-3 w-3 text-primary" />
+                      </div>
+                      <div>
+                        <p
+                          className="text-muted-foreground"
+                          dangerouslySetInnerHTML={{
+                            __html: chapter.citation.replace(
+                              "Gautam, S.",
+                              '<span class="font-semibold">Gautam, S.</span>',
+                            ),
+                          }}
+                        />
+                        <a
+                          href={chapter.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary text-sm flex items-center gap-1 mt-1"
+                        >
+                          <ExternalLink className="h-3 w-3" /> View publication
+                        </a>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
         </div>
+
+        {showLink && (
+          <div className="mt-10 flex justify-center">
+            <Link href="/publications">
+              <Button variant="outline" className="group">
+                See All Publications
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   )

@@ -1,9 +1,75 @@
-import { ArrowRight, Globe, Mail, MapPin, Phone } from "lucide-react"
+"use client"
+import { useState } from "react"
+import { ArrowRight, CheckCircle, Globe, Mail, MapPin, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import SectionHeader from "@/components/SectionHeader"
+import { toast } from "@/components/ui/use-toast"
+import { Toaster } from "@/components/ui/toaster"
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Simple validation
+    if (!formData.name || !formData.email || !formData.message) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/sendMail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setIsSuccess(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        toast({
+          title: "Message Sent!",
+          description: "Thank you for your message. I'll get back to you soon.",
+        });
+      } else {
+        throw new Error(data.error || "Failed to send message");
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send your message. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section id="contact" className="py-20 bg-white">
       <div className="container">
@@ -115,50 +181,87 @@ export default function Contact() {
           </div>
           <Card>
             <CardContent className="p-8">
-              <form className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium">
-                      Name
-                    </label>
-                    <input id="name" placeholder="Your name" className="w-full px-3 py-2 border rounded-md text-sm" />
+              {isSuccess ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                  <h3 className="text-2xl font-bold mb-2">Message Sent!</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Thank you for reaching out. I'll get back to you as soon as possible.
+                  </p>
+                  <Button 
+                    onClick={() => setIsSuccess(false)} 
+                    variant="outline"
+                  >
+                    Send Another Message
+                  </Button>
+                </div>
+              ) : (
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label htmlFor="name" className="text-sm font-medium">
+                        Name <span className="text-red-500">*</span>
+                      </label>
+                      <input 
+                        id="name" 
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Your name" 
+                        className="w-full px-3 py-2 border rounded-md text-sm" 
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="email" className="text-sm font-medium">
+                        Email <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Your email"
+                        className="w-full px-3 py-2 border rounded-md text-sm"
+                        required
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium">
-                      Email
+                    <label htmlFor="subject" className="text-sm font-medium">
+                      Subject
                     </label>
-                    <input
-                      id="email"
-                      type="email"
-                      placeholder="Your email"
-                      className="w-full px-3 py-2 border rounded-md text-sm"
+                    <input 
+                      id="subject" 
+                      value={formData.subject}
+                      onChange={handleChange}
+                      placeholder="Subject" 
+                      className="w-full px-3 py-2 border rounded-md text-sm" 
                     />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="subject" className="text-sm font-medium">
-                    Subject
-                  </label>
-                  <input id="subject" placeholder="Subject" className="w-full px-3 py-2 border rounded-md text-sm" />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-medium">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    placeholder="Your message"
-                    className="w-full px-3 py-2 border rounded-md text-sm min-h-[120px]"
-                  ></textarea>
-                </div>
-                <Button className="w-full">
-                  Send Message <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </form>
+                  <div className="space-y-2">
+                    <label htmlFor="message" className="text-sm font-medium">
+                      Message <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      id="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder="Your message"
+                      className="w-full px-3 py-2 border rounded-md text-sm min-h-[120px]"
+                      required
+                    ></textarea>
+                  </div>
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "Sending..." : "Send Message"} 
+                    {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
+                  </Button>
+                </form>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
+      <Toaster />
     </section>
   )
 }

@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function Header() {
@@ -10,28 +9,31 @@ export default function Header() {
           <span className="text-primary">Suraj</span> Gautam
         </Link>
         <nav className="hidden md:flex gap-6">
-          <Link href="#about" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
+          <Link href="/" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
+            Home
+          </Link>
+          <Link href="/#about" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
             About
           </Link>
-          <Link href="#experience" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
+          <Link href="/#experience" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
             Experience
           </Link>
-          <Link href="#education" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
+          <Link href="/#education" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
             Education
           </Link>
-          <Link href="#publications" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
+          <Link href="/publications" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
             Publications
           </Link>
-          <Link href="#projects" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
+          <Link href="/projects" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
             Projects
           </Link>
-          <Link href="#awards" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
+          <Link href="/awards" className="text-sm font-medium text-gray-700 hover:text-primary hover:underline underline-offset-4 transition-colors">
             Awards
           </Link>
         </nav>
-        <Button className="hidden md:flex bg-primary hover:bg-primary/80 text-white">
+        <Link href="/#contact"><Button className="hidden md:flex bg-primary hover:bg-primary/80 text-white">
           Contact Me
-        </Button>
+        </Button></Link>
         <Button variant="outline" size="icon" className="md:hidden border border-gray-300 hover:bg-gray-100 hover:text-primary transition-colors">
           <svg
             xmlns="http://www.w3.org/2000/svg"
